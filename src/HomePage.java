@@ -59,10 +59,10 @@ public class HomePage extends JFrame implements ActionListener {
             dispose();
 
         }
-        if (e.getSource() == registerButton) {
-            new RegisterPage();
-            dispose();
-        }
+        // if (e.getSource() == registerButton) {
+        //     new RegisterPage();
+        //     dispose();
+        // }
 
     }
 
