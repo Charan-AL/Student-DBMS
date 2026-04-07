@@ -23,17 +23,17 @@ public class RegisterPage extends JFrame {
 
         // Labels
         JLabel nameLabel = new JLabel("Name:");
-        JLabel usnLabel = new JLabel("USN:");
-        JLabel emailLabel = new JLabel("Email:");
+        // JLabel usnLabel = new JLabel("USN:");
+        // JLabel emailLabel = new JLabel("Email:");
         JLabel passLabel = new JLabel("Password:");
-        JLabel phoneLabel = new JLabel("Phone:");
+        // JLabel phoneLabel = new JLabel("Phone:");
 
         // Fields
         JTextField nameField = new JTextField();
-        JTextField usnField = new JTextField();
-        JTextField emailField = new JTextField();
+        // JTextField usnField = new JTextField();
+        // JTextField emailField = new JTextField();
         JPasswordField passField = new JPasswordField();
-        JTextField phoneField = new JTextField();
+        // JTextField phoneField = new JTextField();
 
         // Buttons
         JButton registerBtn = new JButton("Register");
@@ -41,11 +41,13 @@ public class RegisterPage extends JFrame {
         JButton loginBtn = new JButton("Already have account? Login");
 
         // Add components
-        panel.add(nameLabel); panel.add(nameField);
-        panel.add(usnLabel); panel.add(usnField);
-        panel.add(emailLabel); panel.add(emailField);
-        panel.add(passLabel); panel.add(passField);
-        panel.add(phoneLabel); panel.add(phoneField);
+        panel.add(nameLabel);
+        panel.add(nameField);
+        // panel.add(usnLabel); panel.add(usnField);
+        // panel.add(emailLabel); panel.add(emailField);
+        panel.add(passLabel);
+        panel.add(passField);
+        // panel.add(phoneLabel); panel.add(phoneField);
 
         // Buttons row
         panel.add(backBtn);
@@ -61,40 +63,40 @@ public class RegisterPage extends JFrame {
         registerBtn.addActionListener(e -> {
 
             String name = nameField.getText().trim();
-            String usn = usnField.getText().trim();
-            String email = emailField.getText().trim();
+            // String usn = usnField.getText().trim();
+            // String email = emailField.getText().trim();
             String password = new String(passField.getPassword());
-            String phone = phoneField.getText().trim();
+            // String phone = phoneField.getText().trim();
 
-            if (name.isEmpty() || usn.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            if (name.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "All fields are required!");
                 return;
             }
 
-            if (!email.contains("@") || !email.contains(".")) {
-                JOptionPane.showMessageDialog(this, "Invalid email!");
-                return;
-            }
+            // if (!email.contains("@") || !email.contains(".")) {
+            // JOptionPane.showMessageDialog(this, "Invalid email!");
+            // return;
+            // }
 
             if (password.length() < 4) {
                 JOptionPane.showMessageDialog(this, "Password must be at least 4 characters!");
                 return;
             }
 
-            if (!phone.isEmpty() && !phone.matches("\\d+")) {
-                JOptionPane.showMessageDialog(this, "Phone must be digits only!");
-                return;
-            }
+            // if (!phone.isEmpty() && !phone.matches("\\d+")) {
+            // JOptionPane.showMessageDialog(this, "Phone must be digits only!");
+            // return;
+            // }
 
-            saveUser(name, usn, email, password, phone);
+            saveUser(name, password);
 
             JOptionPane.showMessageDialog(this, "Registration Successful!");
 
             nameField.setText("");
-            usnField.setText("");
-            emailField.setText("");
+            // usnField.setText("");
+            // emailField.setText("");
             passField.setText("");
-            phoneField.setText("");
+            // phoneField.setText("");
         });
 
         // ===== Back Button =====
@@ -105,8 +107,8 @@ public class RegisterPage extends JFrame {
 
         // ===== Login Redirect Button =====
         loginBtn.addActionListener(e -> {
-            dispose();          // close register page
-            new LoginPage();    // open login page
+            dispose(); // close register page
+            new LoginPage(); // open login page
         });
 
         // Window settings
@@ -115,9 +117,9 @@ public class RegisterPage extends JFrame {
     }
 
     // Save user
-    public void saveUser(String name, String usn, String email, String password, String phone) {
+    public void saveUser(String name, String password) {
         System.out.println("User Saved:");
-        System.out.println(name + " | " + usn + " | " + email + " | " + password + " | " + phone);
+        System.out.println(name + " | " + password + " | ");
     }
 
     public static void main(String[] args) {
