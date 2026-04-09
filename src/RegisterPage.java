@@ -1,5 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
+import dao.AdminDAO;
+import model.Admin;
 
 public class RegisterPage extends JFrame {
 
@@ -88,15 +90,15 @@ public class RegisterPage extends JFrame {
             // return;
             // }
 
-            saveUser(name, password);
+            boolean saved = saveUser(name, password);
 
-            JOptionPane.showMessageDialog(this, "Registration Successful!");
-
-            nameField.setText("");
-            // usnField.setText("");
-            // emailField.setText("");
-            passField.setText("");
-            // phoneField.setText("");
+            if (saved) {
+                nameField.setText("");
+                // usnField.setText("");
+                // emailField.setText("");
+                passField.setText("");
+                // phoneField.setText("");
+            }
         });
 
         // ===== Back Button =====
@@ -117,9 +119,24 @@ public class RegisterPage extends JFrame {
     }
 
     // Save user
-    public void saveUser(String name, String password) {
-        System.out.println("User Saved:");
-        System.out.println(name + " | " + password + " | ");
+    public boolean saveUser(String name, String password) {
+        Admin admin = new Admin(name, password);
+        AdminDAO dao = new AdminDAO();
+
+        boolean success = dao.register(admin);
+
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Admin registered successfully!");
+            return true;
+        }
+
+        String errorMessage = dao.getLastErrorMessage();
+        if (errorMessage == null || errorMessage.isBlank()) {
+            errorMessage = "Registration failed.";
+        }
+
+        JOptionPane.showMessageDialog(this, errorMessage);
+        return false;
     }
 
     public static void main(String[] args) {
