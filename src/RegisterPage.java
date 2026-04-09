@@ -1,145 +1,130 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import dao.AdminDAO;
 import model.Admin;
 
-public class RegisterPage extends JFrame {
+public class RegisterPage extends JFrame implements ActionListener {
 
-    public RegisterPage() {
+	JTextField nameField;
+	JPasswordField passField;
+	JButton registerButton;
+	JButton backButton;
+	JLabel loginLink;
 
-        // Frame
-        setTitle("Register Form");
-        setSize(350, 380);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
+	public RegisterPage() {
+		setTitle("Register Page");
+		setSize(420, 280);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout(10, 10));
 
-        // ===== Header =====
-        JLabel header = new JLabel("Student Registration", JLabel.CENTER);
-        header.setFont(new Font("Arial", Font.BOLD, 18));
-        header.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        add(header, BorderLayout.NORTH);
+		JLabel title = new JLabel("Student DBMS Registration", JLabel.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 18));
+		add(title, BorderLayout.NORTH);
 
-        // ===== Form Panel =====
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(8, 2, 10, 10)); // increased rows
+		JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+		formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        // Labels
-        JLabel nameLabel = new JLabel("Name:");
-        // JLabel usnLabel = new JLabel("USN:");
-        // JLabel emailLabel = new JLabel("Email:");
-        JLabel passLabel = new JLabel("Password:");
-        // JLabel phoneLabel = new JLabel("Phone:");
+		formPanel.add(new JLabel("Name:"));
+		nameField = new JTextField();
+		formPanel.add(nameField);
 
-        // Fields
-        JTextField nameField = new JTextField();
-        // JTextField usnField = new JTextField();
-        // JTextField emailField = new JTextField();
-        JPasswordField passField = new JPasswordField();
-        // JTextField phoneField = new JTextField();
+		formPanel.add(new JLabel("Password:"));
+		passField = new JPasswordField();
+		formPanel.add(passField);
 
-        // Buttons
-        JButton registerBtn = new JButton("Register");
-        JButton backBtn = new JButton("Back");
-        JButton loginBtn = new JButton("Already have account? Login");
+		add(formPanel, BorderLayout.CENTER);
 
-        // Add components
-        panel.add(nameLabel);
-        panel.add(nameField);
-        // panel.add(usnLabel); panel.add(usnField);
-        // panel.add(emailLabel); panel.add(emailField);
-        panel.add(passLabel);
-        panel.add(passField);
-        // panel.add(phoneLabel); panel.add(phoneField);
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
-        // Buttons row
-        panel.add(backBtn);
-        panel.add(registerBtn);
+		registerButton = new JButton("Register");
+		registerButton.setPreferredSize(new Dimension(110, 35));
+		registerButton.addActionListener(this);
+		buttonPanel.add(registerButton);
 
-        // Login row
-        panel.add(new JLabel("")); // empty space
-        panel.add(loginBtn);
+		backButton = new JButton("Back");
+		backButton.setPreferredSize(new Dimension(110, 35));
+		backButton.addActionListener(this);
+		buttonPanel.add(backButton);
 
-        add(panel, BorderLayout.CENTER);
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
 
-        // ===== Register Action =====
-        registerBtn.addActionListener(e -> {
+		buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		southPanel.add(buttonPanel);
 
-            String name = nameField.getText().trim();
-            // String usn = usnField.getText().trim();
-            // String email = emailField.getText().trim();
-            String password = new String(passField.getPassword());
-            // String phone = phoneField.getText().trim();
+		loginLink = new JLabel("<html>Already have an account? <u>Login here</u></html>");
+		loginLink.setForeground(Color.BLUE.darker());
+		loginLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		loginLink.setAlignmentX(Component.CENTER_ALIGNMENT);
+		loginLink.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+		loginLink.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				new LoginPage();
+				dispose();
+			}
+		});
 
-            if (name.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "All fields are required!");
-                return;
-            }
+		southPanel.add(loginLink);
 
-            // if (!email.contains("@") || !email.contains(".")) {
-            // JOptionPane.showMessageDialog(this, "Invalid email!");
-            // return;
-            // }
+		add(southPanel, BorderLayout.SOUTH);
 
-            if (password.length() < 4) {
-                JOptionPane.showMessageDialog(this, "Password must be at least 4 characters!");
-                return;
-            }
+		setVisible(true);
+	}
 
-            // if (!phone.isEmpty() && !phone.matches("\\d+")) {
-            // JOptionPane.showMessageDialog(this, "Phone must be digits only!");
-            // return;
-            // }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == registerButton) {
+			String name = nameField.getText().trim();
+			String password = new String(passField.getPassword()).trim();
 
-            boolean saved = saveUser(name, password);
+			if (name.isEmpty() || password.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "All fields are required!");
+				return;
+			}
 
-            if (saved) {
-                nameField.setText("");
-                // usnField.setText("");
-                // emailField.setText("");
-                passField.setText("");
-                // phoneField.setText("");
-            }
-        });
+			if (password.length() < 4) {
+				JOptionPane.showMessageDialog(this, "Password must be at least 4 characters!");
+				return;
+			}
 
-        // ===== Back Button =====
-        backBtn.addActionListener(e -> {
-            dispose();
-            new HomePage();
-        });
+			boolean saved = saveUser(name, password);
 
-        // ===== Login Redirect Button =====
-        loginBtn.addActionListener(e -> {
-            dispose(); // close register page
-            new LoginPage(); // open login page
-        });
+			if (saved) {
+				nameField.setText("");
+				passField.setText("");
+			}
+		}
 
-        // Window settings
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+		if (e.getSource() == backButton) {
+			new HomePage();
+			dispose();
+		}
+	}
 
-    // Save user
-    public boolean saveUser(String name, String password) {
-        Admin admin = new Admin(name, password);
-        AdminDAO dao = new AdminDAO();
+	public boolean saveUser(String name, String password) {
+		Admin admin = new Admin(name, password);
+		AdminDAO dao = new AdminDAO();
 
-        boolean success = dao.register(admin);
+		boolean success = dao.register(admin);
 
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Admin registered successfully!");
-            return true;
-        }
+		if (success) {
+			JOptionPane.showMessageDialog(this, "Admin registered successfully!");
+			return true;
+		}
 
-        String errorMessage = dao.getLastErrorMessage();
-        if (errorMessage == null || errorMessage.isBlank()) {
-            errorMessage = "Registration failed.";
-        }
+		String errorMessage = dao.getLastErrorMessage();
+		if (errorMessage == null || errorMessage.isBlank()) {
+			errorMessage = "Registration failed.";
+		}
 
-        JOptionPane.showMessageDialog(this, errorMessage);
-        return false;
-    }
+		JOptionPane.showMessageDialog(this, errorMessage);
+		return false;
+	}
 
-    public static void main(String[] args) {
-        new RegisterPage();
-    }
+	public static void main(String[] args) {
+		new RegisterPage();
+	}
 }
