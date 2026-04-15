@@ -1,78 +1,165 @@
+import dao.AdminDAO;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import model.Admin;
 
-public class RegisterPage extends JFrame {
+public class RegisterPage extends JFrame implements ActionListener {
+
+    JTextField nameField;
+    JPasswordField passField;
+    JButton registerButton;
+    JButton backButton;
+    JLabel loginLink;
 
     public RegisterPage() {
 
-        // Frame
-        setTitle("Register Form");
-        setSize(350, 380);
+        // ===== Frame =====
+        setTitle("Register");
+        setSize(500, 380);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
 
-        // ===== Header =====
-        JLabel header = new JLabel("Student Registration", JLabel.CENTER);
-        header.setFont(new Font("Arial", Font.BOLD, 18));
-        header.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        add(header, BorderLayout.NORTH);
+        // ===== Main Panel =====
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(235, 240, 245));
+        add(mainPanel);
 
-        // ===== Form Panel =====
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(8, 2, 10, 10)); // increased rows
+        // ===== Title =====
+        JLabel title = new JLabel("Create Account", JLabel.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setBorder(new EmptyBorder(20, 0, 10, 0));
+        mainPanel.add(title, BorderLayout.NORTH);
 
-        // Labels
-        JLabel nameLabel = new JLabel("Name:");
-        JLabel usnLabel = new JLabel("USN:");
-        JLabel emailLabel = new JLabel("Email:");
-        JLabel passLabel = new JLabel("Password:");
-        JLabel phoneLabel = new JLabel("Phone:");
+        // ===== Card Panel =====
+        JPanel card = new JPanel();
+        card.setLayout(new GridLayout(5, 1, 10, 15));
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(210, 210, 210)),
+                new EmptyBorder(25, 40, 25, 40)
+        ));
 
-        // Fields
-        JTextField nameField = new JTextField();
-        JTextField usnField = new JTextField();
-        JTextField emailField = new JTextField();
-        JPasswordField passField = new JPasswordField();
-        JTextField phoneField = new JTextField();
+        // ===== Name Field =====
+        card.add(createLabel("Name"));
+        nameField = createTextField();
+        card.add(nameField);
 
-        // Buttons
-        JButton registerBtn = new JButton("Register");
-        JButton backBtn = new JButton("Back");
-        JButton loginBtn = new JButton("Already have account? Login");
+        // ===== Password Field =====
+        card.add(createLabel("Password"));
+        passField = new JPasswordField();
+        styleTextField(passField);
+        card.add(passField);
 
-        // Add components
-        panel.add(nameLabel); panel.add(nameField);
-        panel.add(usnLabel); panel.add(usnField);
-        panel.add(emailLabel); panel.add(emailField);
-        panel.add(passLabel); panel.add(passField);
-        panel.add(phoneLabel); panel.add(phoneField);
+        // ===== Buttons Panel =====
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setBackground(Color.WHITE);
 
-        // Buttons row
-        panel.add(backBtn);
-        panel.add(registerBtn);
+        registerButton = createButton("Register", new Color(40, 167, 69));
+        backButton = createButton("Back", new Color(108, 117, 125));
 
-        // Login row
-        panel.add(new JLabel("")); // empty space
-        panel.add(loginBtn);
+        buttonPanel.add(registerButton);
+        buttonPanel.add(backButton);
 
-        add(panel, BorderLayout.CENTER);
+        card.add(buttonPanel);
 
-        // ===== Register Action =====
-        registerBtn.addActionListener(e -> {
+        // ===== Wrapper =====
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(new Color(235, 240, 245));
+        wrapper.add(card);
 
-            String name = nameField.getText().trim();
-            String usn = usnField.getText().trim();
-            String email = emailField.getText().trim();
-            String password = new String(passField.getPassword());
-            String phone = phoneField.getText().trim();
+        mainPanel.add(wrapper, BorderLayout.CENTER);
 
-            if (name.isEmpty() || usn.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "All fields are required!");
-                return;
+        // ===== Login Link =====
+        loginLink = new JLabel("Already have an account? Login");
+        loginLink.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        loginLink.setForeground(new Color(0, 123, 255));
+        loginLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginLink.setHorizontalAlignment(JLabel.CENTER);
+        loginLink.setBorder(new EmptyBorder(10, 0, 15, 0));
+
+        loginLink.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                loginLink.setText("<html><u>Already have an account? Login</u></html>");
             }
 
-            if (!email.contains("@") || !email.contains(".")) {
-                JOptionPane.showMessageDialog(this, "Invalid email!");
+            public void mouseExited(MouseEvent e) {
+                loginLink.setText("Already have an account? Login");
+            }
+
+            public void mouseClicked(MouseEvent e) {
+                new LoginPage();
+                dispose();
+            }
+        });
+
+        mainPanel.add(loginLink, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    // ===== Styled Label =====
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        return label;
+    }
+
+    // ===== Styled TextField =====
+    private JTextField createTextField() {
+        JTextField field = new JTextField();
+        styleTextField(field);
+        return field;
+    }
+
+    private void styleTextField(JTextField field) {
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setPreferredSize(new Dimension(200, 35));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+    }
+
+    // ===== Styled Button =====
+    private JButton createButton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setBackground(color);
+        btn.setForeground(Color.WHITE);
+        btn.setOpaque(true);
+        btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(130, 40));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(color.darker());
+            }
+
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(color);
+            }
+        });
+
+        btn.addActionListener(this);
+        return btn;
+    }
+
+    // ===== Actions =====
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == registerButton) {
+
+            String name = nameField.getText().trim();
+            String password = new String(passField.getPassword()).trim();
+
+            if (name.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required!");
                 return;
             }
 
@@ -81,43 +168,40 @@ public class RegisterPage extends JFrame {
                 return;
             }
 
-            if (!phone.isEmpty() && !phone.matches("\\d+")) {
-                JOptionPane.showMessageDialog(this, "Phone must be digits only!");
-                return;
+            boolean saved = saveUser(name, password);
+
+            if (saved) {
+                nameField.setText("");
+                passField.setText("");
             }
+        }
 
-            saveUser(name, usn, email, password, phone);
-
-            JOptionPane.showMessageDialog(this, "Registration Successful!");
-
-            nameField.setText("");
-            usnField.setText("");
-            emailField.setText("");
-            passField.setText("");
-            phoneField.setText("");
-        });
-
-        // ===== Back Button =====
-        backBtn.addActionListener(e -> {
-            dispose();
+        if (e.getSource() == backButton) {
             new HomePage();
-        });
-
-        // ===== Login Redirect Button =====
-        loginBtn.addActionListener(e -> {
-            dispose();          // close register page
-            new LoginPage();    // open login page
-        });
-
-        // Window settings
-        setLocationRelativeTo(null);
-        setVisible(true);
+            dispose();
+        }
     }
 
-    // Save user
-    public void saveUser(String name, String usn, String email, String password, String phone) {
-        System.out.println("User Saved:");
-        System.out.println(name + " | " + usn + " | " + email + " | " + password + " | " + phone);
+    // ===== Database Save =====
+    public boolean saveUser(String name, String password) {
+
+        Admin admin = new Admin(name, password);
+        AdminDAO dao = new AdminDAO();
+
+        boolean success = dao.register(admin);
+
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Registered successfully!");
+            return true;
+        }
+
+        String errorMessage = dao.getLastErrorMessage();
+        if (errorMessage == null || errorMessage.isBlank()) {
+            errorMessage = "Registration failed.";
+        }
+
+        JOptionPane.showMessageDialog(this, errorMessage);
+        return false;
     }
 
     public static void main(String[] args) {
