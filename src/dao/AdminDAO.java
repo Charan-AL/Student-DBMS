@@ -1,9 +1,8 @@
 package dao;
 
 import db.DBConnection;
-import model.Admin;
-
 import java.sql.*;
+import model.Admin;
 
 public class AdminDAO {
 
@@ -37,6 +36,25 @@ public class AdminDAO {
     }
 
     // login admin
-    // put the code here
+    public boolean login(String username, String password) {
+        lastErrorMessage = null;
+
+        String sql = "SELECT 1 FROM admin WHERE username = ? AND password = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            lastErrorMessage = e.getMessage();
+            return false;
+        }
+    }
 
 }

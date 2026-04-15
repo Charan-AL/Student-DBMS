@@ -1,93 +1,190 @@
+import dao.AdminDAO;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class LoginPage extends JFrame implements ActionListener {
 
-	JTextField userField;
-	JPasswordField passField;
-	JButton loginButton;
-	JButton backButton;
-	JLabel registerLink;
+    JTextField userField;
+    JPasswordField passField;
+    JButton loginButton;
+    JButton backButton;
+    JLabel registerLink;
 
-	public LoginPage() {
-		setTitle("Login Page");
-		setSize(420, 280);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(new BorderLayout(10, 10));
+    public LoginPage() {
 
-		JLabel title = new JLabel("Student DBMS Login", JLabel.CENTER);
-		title.setFont(new Font("Arial", Font.BOLD, 18));
-		add(title, BorderLayout.NORTH);
+        // ===== Frame =====
+        setTitle("Login");
+        setSize(500, 380);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-		formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+        // ===== Main Panel =====
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(235, 240, 245));
+        add(mainPanel);
 
-		formPanel.add(new JLabel("Username:"));
-		userField = new JTextField();
-		formPanel.add(userField);
+        // ===== Title =====
+        JLabel title = new JLabel("Welcome Back", JLabel.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setBorder(new EmptyBorder(20, 0, 10, 0));
+        mainPanel.add(title, BorderLayout.NORTH);
 
-		formPanel.add(new JLabel("Password:"));
-		passField = new JPasswordField();
-		formPanel.add(passField);
+        // ===== Card Panel =====
+        JPanel card = new JPanel();
+        card.setLayout(new GridLayout(5, 1, 10, 15));
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(210, 210, 210)),
+                new EmptyBorder(25, 40, 25, 40)
+        ));
 
-		add(formPanel, BorderLayout.CENTER);
+        // ===== Username =====
+        card.add(createLabel("Username"));
+        userField = createTextField();
+        card.add(userField);
 
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        // ===== Password =====
+        card.add(createLabel("Password"));
+        passField = new JPasswordField();
+        styleTextField(passField);
+        card.add(passField);
 
-		loginButton = new JButton("Login");
-		loginButton.setPreferredSize(new Dimension(110, 35));
-		loginButton.addActionListener(this);
-		buttonPanel.add(loginButton);
+        // ===== Buttons =====
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setBackground(Color.WHITE);
 
-		backButton = new JButton("Back");
-		backButton.setPreferredSize(new Dimension(110, 35));
-		backButton.addActionListener(this);
-		buttonPanel.add(backButton);
+        loginButton = createButton("Login", new Color(0, 123, 255));
+        backButton = createButton("Back", new Color(108, 117, 125));
 
-		JPanel southPanel = new JPanel();
-		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(loginButton);
+        buttonPanel.add(backButton);
 
-		buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		southPanel.add(buttonPanel);
+        card.add(buttonPanel);
 
-		registerLink = new JLabel("<html>New user? Don\'t have an account yet? <u>Register here</u></html>");
-		registerLink.setForeground(Color.BLUE.darker());
-		registerLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		registerLink.setAlignmentX(Component.CENTER_ALIGNMENT);
-		registerLink.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
-		registerLink.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				new RegisterPage();
-				dispose();
-			}
-		});
+        // ===== Wrapper =====
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(new Color(235, 240, 245));
+        wrapper.add(card);
 
-		southPanel.add(registerLink);
+        mainPanel.add(wrapper, BorderLayout.CENTER);
 
-		add(southPanel, BorderLayout.SOUTH);
+        // ===== Register Link =====
+        registerLink = new JLabel("New user? Register here");
+        registerLink.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        registerLink.setForeground(new Color(0, 123, 255));
+        registerLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        registerLink.setHorizontalAlignment(JLabel.CENTER);
+        registerLink.setBorder(new EmptyBorder(10, 0, 15, 0));
 
-		setVisible(true);
-	}
+        registerLink.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                registerLink.setText("<html><u>New user? Register here</u></html>");
+            }
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == loginButton) {
-			String username = userField.getText().trim();
-			String password = new String(passField.getPassword()).trim();
+            public void mouseExited(MouseEvent e) {
+                registerLink.setText("New user? Register here");
+            }
 
-			if (username.isEmpty() || password.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Please enter both username and password.");
-			} else {
-				JOptionPane.showMessageDialog(this, "Login successful for: " + username);
-			}
-		}
+            public void mouseClicked(MouseEvent e) {
+                new RegisterPage();
+                dispose();
+            }
+        });
 
-		if (e.getSource() == backButton) {
-			new HomePage();
-			dispose();
-		}
-	}
+        mainPanel.add(registerLink, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    // ===== Label =====
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        return label;
+    }
+
+    // ===== TextField =====
+    private JTextField createTextField() {
+        JTextField field = new JTextField();
+        styleTextField(field);
+        return field;
+    }
+
+    private void styleTextField(JTextField field) {
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setPreferredSize(new Dimension(200, 35));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+    }
+
+    // ===== Button =====
+    private JButton createButton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setBackground(color);
+        btn.setForeground(Color.WHITE);
+        btn.setOpaque(true);
+        btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(130, 40));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(color.darker());
+            }
+
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(color);
+            }
+        });
+
+        btn.addActionListener(this);
+        return btn;
+    }
+
+    // ===== Actions =====
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == loginButton) {
+
+            String username = userField.getText().trim();
+            String password = new String(passField.getPassword()).trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter both username and password.");
+                return;
+            }
+
+            AdminDAO dao = new AdminDAO();
+            boolean valid = dao.login(username, password);
+
+            if (valid) {
+                JOptionPane.showMessageDialog(this, "Login successful for: " + username);
+                // TODO: navigate to the next page after successful login
+            } else {
+                String error = dao.getLastErrorMessage();
+                if (error != null && !error.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Login failed: ");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password.");
+                }
+            }
+        }
+
+        if (e.getSource() == backButton) {
+            new HomePage();
+            dispose();
+        }
+    }
+
+    public static void main(String[] args) {
+        new LoginPage();
+    }
 }
